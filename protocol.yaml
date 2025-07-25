@@ -1,2 +1,7 @@
 parity: even
 extended: true
+
+network:
+  host: "127.0.0.1"
+  port_emisor: 60000
+  port_receptor: 60001
