@@ -1,6 +1,7 @@
 from application import getMsg
 from presentation import stringToBin
 from data_link import applyHamming
+from noise import make_noise
 
 def main():
     print("Bienvenido al simulador de capas de redes\n")
@@ -14,7 +15,8 @@ def main():
     msg_hamming = applyHamming(binario)
     print(f"Mensaje codificado: {msg_hamming}")
     
-    # aplicar ruido
+    msg_hamming = make_noise(tasa_error, msg_hamming)
+    print(f"Message with sound: {msg_hamming}")
 
 if __name__ == "__main__":
     main()
