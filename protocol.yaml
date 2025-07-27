@@ -1,7 +1,7 @@
 parity: even
 extended: true
+bits_per_char: 8
 
 network:
   host: "127.0.0.1"
-  port_emisor: 60000
-  port_receptor: 60001
+  port: 60000

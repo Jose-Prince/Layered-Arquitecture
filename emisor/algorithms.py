@@ -1,6 +1,6 @@
 import os
 import yaml
-class HammingTransmitter:
+class HammingAlgorithm:
     def __init__(self, msg, config_path="./protocol.yaml", generate_report=True, output_path="./reports/t_hamming_report.txt", detail_path="./reports/t_hamming_detail.txt"):
         self.msg = msg
         self.msg_bits = []
@@ -122,6 +122,7 @@ class HammingTransmitter:
         return ''.join(str(bit) for bit, _ in self.msg_bits)
 
     def exportToTxt(self, filename):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
         with open(filename, "w", encoding="utf-8") as f:
             f.write("===== HAMMING TRANSMITTER REPORT =====\n\n")
 
@@ -160,6 +161,7 @@ class HammingTransmitter:
             f.write("\n===== FIN DEL REPORTE =====\n")
 
     def exportDetailTxt(self, detail_path):
+        os.makedirs(os.path.dirname(detail_path), exist_ok=True)
         with open(detail_path, "w", encoding="utf-8") as f:
             f.write("===== DETALLE DE LA CODIFICACIÓN HAMMING =====\n\n")
             for line in self.detail_lines:
@@ -198,7 +200,7 @@ def menu():
             print("Entrada inválida. Solo se permiten 0s y 1s.")
     
     # Crear transmisor
-    transmitter = HammingTransmitter(
+    transmitter = HammingAlgorithm(
         msg=msg,
         config_path=config_path,
         generate_report=True,

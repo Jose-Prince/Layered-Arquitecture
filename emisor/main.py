@@ -2,14 +2,21 @@ from application import getMsg
 from presentation import stringToBin
 from data_link import applyHamming
 from noise import make_noise
+import yaml
+
+def loadProtocol(path="../protocol.yaml"):
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
 
 def main():
+    protocol = loadProtocol()
+    
     print("Bienvenido al simulador de capas de redes\n")
 
     mensaje, tasa_error, algoritmo = getMsg()
     print(f"\nMensaje ingresado: {mensaje}")
     
-    binario = stringToBin(mensaje)
+    binario = stringToBin(mensaje=mensaje, bits_per_char=protocol["bits_per_char"])
     print(f"Codificado ASCII: {binario}")
     
     msg_hamming = applyHamming(binario)

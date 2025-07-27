@@ -1,3 +1,3 @@
 # Layered-Arquitecture
 
-![Screenshot](./screenshot.png)
+![Screenshot](./images/screenshot.png)
