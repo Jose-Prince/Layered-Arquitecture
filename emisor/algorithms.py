@@ -168,6 +168,38 @@ class HammingAlgorithm:
                 f.write(line + "\n")
             f.write("\n===== FIN DEL DETALLE =====\n")
 
+def fletcher_checksum_emitter(msg, f_type):
+    block_size = f_type // 2
+    mod = 2 ** block_size - 1
+
+    # Padding para que el mensaje sea divisible por el block_size
+    padding_needed = block_size - (len(msg) % block_size)
+    padded_msg = msg
+    if padding_needed != block_size:
+        padded_msg += "0" * padding_needed
+
+    sum1 = 0
+    sum2 = 0
+
+    # Procesamiento por bloques
+    for i in range(0, len(padded_msg), block_size):
+        c = padded_msg[i:i + block_size]
+        value = int(c, 2)
+        sum1 = (sum1 + value) % mod
+        sum2 = (sum2 + sum1) % mod
+
+    # Calcular el checksum
+    checksum = (sum2 << block_size) | sum1
+    total_bits = 2 * block_size
+
+    # Convertir a binario
+    bin_checksum = format(checksum, f'0{total_bits}b')
+
+    complete_msg = padded_msg + bin_checksum
+    print(f"Checksum: {complete_msg}")
+    return complete_msg
+
+
 def menu():
     report_path="./reports/t_hamming_report.txt"
     config_path="./protocol.yaml"
