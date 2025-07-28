@@ -27,6 +27,7 @@ def main():
     print(f"Message with sound: {msg_hamming}")
     
     sendMsg(msg_hamming)
+    print(f"\n\t¡Mensaje enviado!")
 
 if __name__ == "__main__":
     main()
