@@ -2,6 +2,7 @@ from application import getMsg
 from presentation import stringToBin
 from data_link import applyHamming
 from noise import make_noise
+from transmission import sendMsg
 import yaml
 
 def loadProtocol(path="../protocol.yaml"):
@@ -24,6 +25,8 @@ def main():
     
     msg_hamming = make_noise(tasa_error, msg_hamming)
     print(f"Message with sound: {msg_hamming}")
+    
+    sendMsg(msg_hamming)
 
 if __name__ == "__main__":
     main()
