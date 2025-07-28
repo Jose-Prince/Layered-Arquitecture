@@ -5,6 +5,8 @@ import java.net.Socket;
 
 public class Transmission {
   private final ProtocolConfig config;
+  private ServerSocket serverSocket;
+  private volatile boolean running = true;
 
   public Transmission(ProtocolConfig config) {
     this.config = config;
@@ -13,27 +15,48 @@ public class Transmission {
   public void start() {
     int port = config.getNetwork().getPort();
 
-    try (ServerSocket serverSocket = new ServerSocket(port)) {
+    try {
+      serverSocket = new ServerSocket(port);
+
+      // Hook para cerrar el serverSocket en shutdown (Ctrl+C)
+      Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+        System.out.println("\n\tShutdown Hook: cerrando server socket...");
+        running = false;
+        try {
+          if (serverSocket != null && !serverSocket.isClosed()) {
+            serverSocket.close();
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }));
+
       System.out.println("Servidor escuchando en " + config.getNetwork().getHost() + ":" + port + "...");
 
-      while (true) {
-        Socket clientSocket = serverSocket.accept();
-        System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
+      while (running) {
+        try {
+          Socket clientSocket = serverSocket.accept();
+          // System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
 
-        BufferedReader in = new BufferedReader(
-            new InputStreamReader(clientSocket.getInputStream()));
+          BufferedReader in = new BufferedReader(
+              new InputStreamReader(clientSocket.getInputStream()));
 
-        String message = in.readLine();
-        System.out.println("Mensaje recibido: " + message);
+          String message = in.readLine();
+          System.out.println("\tMensaje recibido: " + message);
 
-        // ✅ Mostrar también la configuración actual
-        System.out.println("Usando configuración:");
-        System.out.println("  Parity: " + config.getParity());
-        System.out.println("  Extended: " + config.isExtended());
-        System.out.println("  Bits per char: " + config.getBits_per_char());
+          clientSocket.close();
 
-        clientSocket.close();
+        } catch (java.net.SocketException se) {
+          if (!running) {
+            System.out.println("Server socket cerrado, terminando ciclo.");
+          } else {
+            se.printStackTrace();
+          }
+        }
       }
+      System.out.println("Servidor detenido correctamente.");
+      System.out.flush();
+
     } catch (Exception e) {
       e.printStackTrace();
     }

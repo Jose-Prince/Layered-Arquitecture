@@ -6,11 +6,12 @@ public class Main {
 
       // Probando el config y loader
       ProtocolConfig config = ConfigLoader.load("../protocol.yaml");
-      System.out.println("Parity: " + config.getParity());
-      System.out.println("Extended: " + config.isExtended());
-      System.out.println("Bits per char: " + config.getBits_per_char());
-      System.out.println("Host: " + config.getNetwork().getHost());
-      System.out.println("Port: " + config.getNetwork().getPort());
+      System.out.println("Configuración de protocolo");
+      System.out.println("\tParity: " + config.getParity());
+      System.out.println("\tExtended: " + config.isExtended());
+      System.out.println("\tBits per char: " + config.getBits_per_char());
+      System.out.println("\tHost: " + config.getNetwork().getHost());
+      System.out.println("\tPort: " + config.getNetwork().getPort());
 
       // Probando la transmision por config
       Transmission transmission = new Transmission(config);
