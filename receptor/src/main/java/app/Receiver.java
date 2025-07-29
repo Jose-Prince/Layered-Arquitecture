@@ -1,4 +1,8 @@
+package app;
+
 import org.yaml.snakeyaml.Yaml;
+
+import core.ValidationResult;
 
 import java.io.*;
 import java.util.*;

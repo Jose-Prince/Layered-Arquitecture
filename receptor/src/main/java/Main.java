@@ -1,20 +1,39 @@
+import app.MessageListener;
+import app.Transmission;
+import config.ConfigLoader;
+import config.ProtocolConfig;
+
 public class Main {
 
   public static void main(String[] args) {
-
     try {
-
-      // Probando el config y loader
       ProtocolConfig config = ConfigLoader.load("../protocol.yaml");
-      System.out.println("Configuración de protocolo");
+
+      System.out.println("Configuración de protocolo:");
       System.out.println("\tParity: " + config.getParity());
       System.out.println("\tExtended: " + config.isExtended());
       System.out.println("\tBits per char: " + config.getBits_per_char());
+
+      System.out.println("Network:");
       System.out.println("\tHost: " + config.getNetwork().getHost());
       System.out.println("\tPort: " + config.getNetwork().getPort());
 
-      // Probando la transmision por config
-      Transmission transmission = new Transmission(config);
+      System.out.println("Algorithms:");
+      System.out.println("\tHamming bit value: " + config.getAlgorithms().getHamming());
+      System.out.println("\tFletcher bit value: " + config.getAlgorithms().getFletcher());
+
+      System.out.println("Hamming:");
+      System.out.println("\tBits configuration(data): " + config.getHamming().getBits_configuration());
+
+      Transmission transmission = new Transmission(config, new MessageListener() {
+        @Override
+        public void onMessageReceived(String message) {
+          // Aquí puedes mandar el mensaje a otras funciones
+          System.out.println("\tMensaje recibido: " + message);
+          // por ejemplo: procesarMensaje(message);
+        }
+      });
+
       transmission.start();
 
     } catch (Exception e) {

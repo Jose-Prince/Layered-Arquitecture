@@ -1,15 +1,21 @@
+package app;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import config.ProtocolConfig;
+
 public class Transmission {
   private final ProtocolConfig config;
   private ServerSocket serverSocket;
   private volatile boolean running = true;
+  private final MessageListener listener;
 
-  public Transmission(ProtocolConfig config) {
+  public Transmission(ProtocolConfig config, MessageListener listener) {
     this.config = config;
+    this.listener = listener;
   }
 
   public void start() {
@@ -18,7 +24,6 @@ public class Transmission {
     try {
       serverSocket = new ServerSocket(port);
 
-      // Hook para cerrar el serverSocket en shutdown (Ctrl+C)
       Runtime.getRuntime().addShutdownHook(new Thread(() -> {
         System.out.println("\n\tShutdown Hook: cerrando server socket...");
         running = false;
@@ -34,17 +39,14 @@ public class Transmission {
       System.out.println("Servidor escuchando en " + config.getNetwork().getHost() + ":" + port + "...");
 
       while (running) {
-        try {
-          Socket clientSocket = serverSocket.accept();
-          // System.out.println("Cliente conectado: " + clientSocket.getInetAddress());
-
-          BufferedReader in = new BufferedReader(
-              new InputStreamReader(clientSocket.getInputStream()));
+        try (Socket clientSocket = serverSocket.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
 
           String message = in.readLine();
-          System.out.println("\tMensaje recibido: " + message);
 
-          clientSocket.close();
+          if (listener != null) {
+            listener.onMessageReceived(message);
+          }
 
         } catch (java.net.SocketException se) {
           if (!running) {
@@ -54,8 +56,8 @@ public class Transmission {
           }
         }
       }
+
       System.out.println("Servidor detenido correctamente.");
-      System.out.flush();
 
     } catch (Exception e) {
       e.printStackTrace();
