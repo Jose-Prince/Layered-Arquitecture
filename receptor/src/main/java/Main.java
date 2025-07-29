@@ -1,4 +1,6 @@
+import app.Application;
 import app.MessageListener;
+import app.Presentation;
 import app.Transmission;
 import config.ConfigLoader;
 import config.ProtocolConfig;
@@ -28,30 +30,16 @@ public class Main {
       Transmission transmission = new Transmission(config, new MessageListener() {
         @Override
         public void onMessageReceived(String message) {
-          // Aquí puedes mandar el mensaje a otras funciones
-          System.out.println("\tMensaje recibido: " + message);
-          // por ejemplo: procesarMensaje(message);
+          System.out.println("\t\nMensaje recibido: " + message);
           int receivedAlgorithmBit = Character.getNumericValue(message.charAt(0));
 
           if (receivedAlgorithmBit == config.getAlgorithms().getHamming()) {
-            boolean isExtended = config.isExtended();
-            boolean isEven = config.isParityEven();
-            int bitsConfig = config.getHamming().getBits_configuration();
 
-            decoders.HammingDecoder decoder = new decoders.HammingDecoder(
-                message,
-                bitsConfig,
-                isExtended,
-                isEven);
-
-            // Mostrar el detalle
-            for (String line : decoder.getDetailLines()) {
-              System.out.println(line);
-            }
-            // System.out.println("Raw message usado para HammingDecoder: " +
-            // decoder.getRawMessage());
+            core.ValidationResult result = Presentation.decodeHammingMessage(message, config);
+            Application.processHamming(result, config);
           }
 
+          // Otro algoritmo como Fletcher
         }
       });
 
