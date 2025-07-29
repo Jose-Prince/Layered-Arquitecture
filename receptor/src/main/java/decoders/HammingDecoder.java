@@ -9,6 +9,7 @@ public class HammingDecoder {
   private int bitsConfiguration;
   private boolean isExtended;
   private boolean isEvenParity;
+  private String rawMessage;
   private int dataBits;
   private int totalBits;
 
@@ -28,7 +29,7 @@ public class HammingDecoder {
 
   // Documentación
   private List<String> detailLines;
-  private List<String> typeBit = List.of("d", "r", "rg", "alg", "conf");
+  private List<String> typeBit = List.of("d", "r", "rg");
 
   /*
    * Constructor de la clase Receiver
@@ -38,14 +39,19 @@ public class HammingDecoder {
     this.bitsConfiguration = bitsConfiguration;
     this.isExtended = isExtended;
     this.isEvenParity = isEvenParity;
-    this.totalBits = message.length();
 
     // datos calculados
+    this.rawMessage = this.message.substring(1 + this.bitsConfiguration);
+    this.totalBits = rawMessage.length();
     this.dataBits = extractDataBits();
     this.maxPosition = this.isExtended ? this.totalBits - 1 : this.totalBits;
     this.redundancyBits = calculateRedundancyBits();
     this.posRedundancyBits = calculatePositionRedundancyBits();
-
+    bitSetupReceived();
+    assignRedundancyCoverage();
+    setMsgBitsCalculated();
+    setAllRedundancyBits();
+    this.validationResult = decodeMsg();
   }
 
   /**
@@ -98,28 +104,18 @@ public class HammingDecoder {
     this.detailLines.add("Construcción del mensaje recibido:");
 
     for (int i = 1; i <= this.totalBits; i++) {
-      int bit = Character.getNumericValue(this.message.charAt(i - 1));
+      int bit = Character.getNumericValue(this.rawMessage.charAt(i - 1));
       String tipo;
 
-      if (i == 1) {
-        tipo = this.typeBit.get(3); // "alg"
-        this.detailLines.add(String.format("\t- Posición %d: bit '%d' (tipo de algoritmo, alg)", i, bit));
-      } else if (i <= 1 + this.bitsConfiguration) {
-        tipo = this.typeBit.get(4); // "conf"
-        this.detailLines.add(String.format("\t- Posición %d: bit '%d' (configuración de longitud, conf)", i, bit));
-      } else if (this.isExtended && i == this.totalBits) {
+      if (this.isExtended && i == this.totalBits) {
         tipo = this.typeBit.get(2); // "rg"
         this.detailLines.add(String.format("\t- Posición %d: bit '%d' (paridad global, rg)", i, bit));
+      } else if (this.posRedundancyBits.contains(i)) {
+        tipo = this.typeBit.get(1); // "r"
+        this.detailLines.add(String.format("\t- Posición %d: bit '%d' (paridad Hamming, r)", i, bit));
       } else {
-        int logicalIndex = i - (1 + this.bitsConfiguration);
-
-        if (this.posRedundancyBits.contains(logicalIndex + 1)) {
-          tipo = this.typeBit.get(1); // "r"
-          this.detailLines.add(String.format("\t- Posición %d: bit '%d' (paridad Hamming, r)", i, bit));
-        } else {
-          tipo = this.typeBit.get(0); // "d"
-          this.detailLines.add(String.format("\t- Posición %d: bit '%d' (dato, d)", i, bit));
-        }
+        tipo = this.typeBit.get(0); // "d"
+        this.detailLines.add(String.format("\t- Posición %d: bit '%d' (dato, d)", i, bit));
       }
 
       this.msgBitsReceived.add(new java.util.AbstractMap.SimpleEntry<>(bit, tipo));
@@ -138,27 +134,283 @@ public class HammingDecoder {
     this.redundancyCoverageMap = new java.util.HashMap<>();
     this.detailLines.add("Asignación de cobertura de bits de redundancia:");
 
-    // Offset: cantidad de bits antes del bloque codificado (alg + conf)
-    int offset = 1 + this.bitsConfiguration;
-
     for (int r : this.posRedundancyBits) {
       List<Integer> posiciones = new java.util.ArrayList<>();
 
-      for (int i = 1; i <= this.totalBits - offset; i++) {
-        int realPos = i + offset;
+      for (int i = 1; i <= this.totalBits; i++) {
         boolean isCovered = (i & r) != 0;
-        boolean notGlobalBit = !this.isExtended || realPos != this.totalBits;
+        boolean notGlobalBit = !this.isExtended || i != this.totalBits;
 
         if (isCovered && notGlobalBit) {
-          posiciones.add(realPos);
+          posiciones.add(i);
         }
       }
 
       this.redundancyCoverageMap.put(r, posiciones);
-      this.detailLines.add(String.format(" - r%d (posición %d) cubre: %s", r, r + offset, posiciones));
+      this.detailLines.add(String.format(" - r%d (posición %d) cubre: %s", r, r, posiciones));
     }
 
     this.detailLines.add("");
+  }
+
+  /**
+   * Construye `msgBitsCalculated` a partir de `msgBitsReceived`.
+   * - Copia los bits de datos ("d") tal cual.
+   * - Inicializa los bits de redundancia ("r", "rg") con -1 para ser
+   * recalculados.
+   */
+  public void setMsgBitsCalculated() {
+    this.msgBitsCalculated = new java.util.ArrayList<>();
+    this.detailLines.add("Inicializando msgBitsCalculated:");
+
+    for (Map.Entry<Integer, String> entry : this.msgBitsReceived) {
+      int bit = entry.getKey();
+      String tipo = entry.getValue();
+
+      if ("d".equals(tipo)) {
+        this.msgBitsCalculated.add(new java.util.AbstractMap.SimpleEntry<>(bit, tipo));
+        this.detailLines.add(
+            String.format("\t- Bit de dato en posición %d con valor %d copiado", this.msgBitsCalculated.size(), bit));
+      } else if ("r".equals(tipo) || "rg".equals(tipo)) {
+        this.msgBitsCalculated.add(new java.util.AbstractMap.SimpleEntry<>(-1, tipo));
+        this.detailLines.add(String.format("\t- Bit de redundancia tipo '%s' inicializado en posición %d con valor -1",
+            tipo, this.msgBitsCalculated.size()));
+      }
+    }
+
+    this.detailLines.add("");
+  }
+
+  /**
+   * Calcula la paridad para un bit de redundancia específico.
+   * 
+   * - Usa los bits de `msgBitsCalculated` (que ya tiene datos y -1 en
+   * redundancias).
+   * - Usa `redundancyCoverageMap` para saber qué posiciones afecta el bit de
+   * paridad.
+   * - Genera el detalle del proceso en `detailLines`.
+   */
+  public int calculateParity(int position) {
+    List<Integer> positionsToCheck = this.redundancyCoverageMap.get(position);
+    int count = 0;
+    List<String> bitValues = new java.util.ArrayList<>();
+
+    for (int pos : positionsToCheck) {
+      int bit = this.msgBitsCalculated.get(pos - 1).getKey();
+      if (bit == 1) {
+        count++;
+      }
+      bitValues.add(pos + "=" + bit);
+    }
+
+    int parity = this.isEvenParity ? count % 2 : (count + 1) % 2;
+
+    this.detailLines.add(String.format(
+        "r%d cubre posiciones %s -> valores: [%s]. Total de 1s: %d. Paridad %s usada -> bit de paridad: %d",
+        position,
+        positionsToCheck,
+        String.join(", ", bitValues),
+        count,
+        this.isEvenParity ? "par" : "impar",
+        parity));
+
+    return parity;
+  }
+
+  /**
+   * Calcula la paridad extendida del mensaje.
+   * 
+   * Recorre todos los bits de `msgBitsCalculated` excepto el último (que
+   * corresponde al bit global),
+   * y calcula la paridad según el tipo configurado.
+   */
+  public int calculateParityExtend() {
+    List<Map.Entry<Integer, String>> bitsInPositions = this.msgBitsCalculated.subList(0, this.totalBits - 1);
+
+    int countOnes = 0;
+    StringBuilder bitValuesStr = new StringBuilder();
+
+    for (int i = 0; i < bitsInPositions.size(); i++) {
+      Map.Entry<Integer, String> entry = bitsInPositions.get(i);
+      int bit = entry.getKey();
+      int pos = i + 1;
+
+      if (bit == 1) {
+        countOnes++;
+      }
+
+      bitValuesStr.append(pos).append("=").append(bit).append(", ");
+    }
+
+    // Eliminar la última coma y espacio
+    if (bitValuesStr.length() > 0) {
+      bitValuesStr.setLength(bitValuesStr.length() - 2);
+    }
+
+    int parity = this.isEvenParity ? countOnes % 2 : (countOnes + 1) % 2;
+
+    this.detailLines.add(String.format(
+        "Paridad extendida cubre todas las posiciones excepto la final -> valores: [%s]. Total de 1s: %d. Paridad %s usada -> bit global: %d",
+        bitValuesStr.toString(), countOnes, this.isEvenParity ? "par" : "impar", parity));
+
+    return parity;
+  }
+
+  /**
+   * Calcula y asigna todos los bits de redundancia (r) y, si aplica, el bit de
+   * paridad global (rg).
+   */
+  public void setAllRedundancyBits() {
+    this.detailLines.add("Calculando y asignando bits de redundancia:");
+
+    // 1. Calcular paridades Hamming
+    for (int position : this.posRedundancyBits) {
+      int parity = this.calculateParity(position);
+      this.msgBitsCalculated.set(position - 1, new java.util.AbstractMap.SimpleEntry<>(parity, this.typeBit.get(1))); // "r"
+      this.detailLines.add(String.format("\t- Bit de redundancia r%d asignado con valor %d", position, parity));
+    }
+
+    // 2. Calcular paridad extendida si está activada
+    if (this.isExtended) {
+      int parityExtend = this.calculateParityExtend();
+      this.msgBitsCalculated.set(this.totalBits - 1,
+          new java.util.AbstractMap.SimpleEntry<>(parityExtend, this.typeBit.get(2))); // "rg"
+      this.extendedParityBit = parityExtend;
+      this.detailLines.add(String.format("\t- Bit de redundancia extendida rg asignado con valor %d", parityExtend));
+    } else {
+      this.extendedParityBit = null;
+    }
+
+    this.detailLines.add("");
+  }
+
+  /**
+   * Verifica si existen errores en los bits de paridad y estima la posición del
+   * error.
+   * Devuelve un objeto ValidationResult con el estado del análisis.
+   */
+  public core.ValidationResult validateErrors() {
+    boolean isError = false;
+    boolean isOneError = false;
+    int positionError = 0;
+
+    this.detailLines.add("===== DETECCIÓN DE ERRORES =====");
+    this.detailLines.add("Comparación de bits de paridad recibidos vs calculados:");
+    this.detailLines.add("Bits de paridad (posRedundancyBits): " + this.posRedundancyBits);
+
+    // Comparar cada bit de paridad recibido vs calculado
+    for (int parityPos : this.posRedundancyBits) {
+      int received = this.msgBitsReceived.get(parityPos - 1).getKey();
+      int calculated = this.msgBitsCalculated.get(parityPos - 1).getKey();
+
+      this.detailLines
+          .add(String.format(" - Posición %d: recibido = %d, calculado = %d", parityPos, received, calculated));
+
+      if (received != calculated) {
+        isError = true;
+        positionError += parityPos;
+        this.detailLines.add("   -> Diferencia detectada en bit de paridad r" + parityPos);
+      }
+    }
+
+    if (!isError) {
+      this.detailLines.add("-> No se detectaron errores de paridad.");
+    } else {
+      this.detailLines.add("-> Se detectaron errores de paridad.");
+      this.detailLines.add(" - Posición decimal del error estimado: " + positionError);
+
+      if (this.isExtended) {
+        this.detailLines.add("\nVerificando bit de paridad extendida:");
+
+        int receivedGlobal = this.msgBitsReceived.get(this.totalBits - 1).getKey();
+        int calculatedGlobal = this.extendedParityBit != null ? this.extendedParityBit : -1;
+
+        this.detailLines.add(" - Paridad extendida recibida: " + receivedGlobal);
+        this.detailLines.add(" - Paridad extendida calculada: " + calculatedGlobal);
+
+        if (receivedGlobal == calculatedGlobal) {
+          isOneError = true;
+          this.detailLines.add("-> Bit global coincide -> Se asume un único error, se puede corregir.");
+        } else {
+          this.detailLines.add("-> No coincide bit global -> Múltiples errores, no se puede corregir.");
+        }
+      } else {
+        this.detailLines.add("-> No hay bit de paridad extendida -> No se puede confirmar si hay múltiples errores.");
+      }
+    }
+
+    this.detailLines.add("===== FIN DE DETECCIÓN DE ERRORES =====");
+
+    this.validationResult = new core.ValidationResult(
+        isError,
+        positionError - 1, // Indexación base 0
+        isOneError,
+        null // Mensaje decodificado se asignará luego
+    );
+
+    return this.validationResult;
+  }
+
+  /**
+   * Método que evalúa errores, intenta corregir (si aplica) y reconstruye el
+   * mensaje.
+   * Se actualiza y retorna el ValidationResult.
+   */
+  public core.ValidationResult decodeMsg() {
+    // Paso 1: Validar errores y obtener el resultado base
+    core.ValidationResult result = this.validateErrors();
+
+    this.detailLines.add("\n===== PROCESO DE CONSTRUCCIÓN DEL MENSAJE FINAL =====");
+
+    // Paso 2: Manejo de errores
+    if (result.isError()) {
+      this.detailLines.add("-> Se detectó un error en el mensaje.");
+
+      if (result.isOneError()) {
+        this.detailLines.add("-> Es un único error. Se intentará corregir.");
+
+        int pos = result.getPositionError();
+
+        if (pos >= 0 && pos < this.msgBitsCalculated.size()) {
+          Integer bitBefore = this.msgBitsCalculated.get(pos).getKey();
+          int bitAfter = (bitBefore != null && bitBefore == 1) ? 0 : 1;
+
+          this.detailLines.add(" - Posición del error: " + (pos + 1));
+          this.detailLines.add(" - Bit antes de la corrección: " + bitBefore);
+          this.detailLines.add(" - Bit después de la corrección: " + bitAfter);
+
+          this.msgBitsCalculated.set(pos,
+              new java.util.AbstractMap.SimpleEntry<>(bitAfter, this.msgBitsCalculated.get(pos).getValue()));
+        }
+
+      } else {
+        this.detailLines.add("-> No se puede corregir el error. Se requiere retransmisión.");
+        this.detailLines.add(" - Resultado final: RETRANSMITIR");
+        this.detailLines.add("===== FIN DEL PROCESO DE CONSTRUCCIÓN =====");
+
+        result.setDecodedMessage("RETRANSMITIR");
+        return result;
+      }
+
+    } else {
+      this.detailLines.add("-> No se detectaron errores. El mensaje es válido.");
+    }
+
+    // Paso 3: Extraer los bits de datos
+    StringBuilder output = new StringBuilder();
+
+    for (Map.Entry<Integer, String> entry : this.msgBitsCalculated) {
+      if ("d".equals(entry.getValue())) {
+        Integer bit = entry.getKey();
+        output.append(bit != null ? bit.toString() : "X");
+      }
+    }
+
+    this.detailLines.add(" - Mensaje final (solo bits de datos): " + output);
+    this.detailLines.add("===== FIN DEL PROCESO DE CONSTRUCCIÓN =====");
+
+    result.setDecodedMessage(output.toString());
+    return result;
   }
 
   /**
@@ -170,6 +422,17 @@ public class HammingDecoder {
 
   public void setMessage(String message) {
     this.message = message;
+  }
+
+  /**
+   * Mensaje sin el encabezado (bits de algoritmo y de información configuración)
+   */
+  public String getRawMessage() {
+    return this.rawMessage;
+  }
+
+  public void setRawMessage(String rawMessage) {
+    this.rawMessage = rawMessage;
   }
 
   /**

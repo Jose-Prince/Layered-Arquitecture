@@ -44,13 +44,12 @@ public class Main {
                 isExtended,
                 isEven);
 
-            decoder.bitSetupReceived();
-            decoder.assignRedundancyCoverage();
-
             // Mostrar el detalle
-            // for (String line : decoder.getDetailLines()) {
-            // System.out.println(line);
-            // }
+            for (String line : decoder.getDetailLines()) {
+              System.out.println(line);
+            }
+            // System.out.println("Raw message usado para HammingDecoder: " +
+            // decoder.getRawMessage());
           }
 
         }
