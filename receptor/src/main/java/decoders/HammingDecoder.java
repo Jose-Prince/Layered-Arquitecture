@@ -32,7 +32,7 @@ public class HammingDecoder {
   private List<String> typeBit = List.of("d", "r", "rg");
 
   /*
-   * Constructor de la clase Receiver
+   * Constructor
    */
   public HammingDecoder(String message, int bitsConfiguration, boolean isExtended, boolean isEvenParity) {
     this.message = message;
@@ -42,6 +42,11 @@ public class HammingDecoder {
 
     // datos calculados
     this.rawMessage = this.message.substring(1 + this.bitsConfiguration);
+
+    // Inicio
+    this.detailLines = new java.util.ArrayList<>();
+    this.detailLines.add("Raw message usado para HammingDecoder: " + this.rawMessage);
+
     this.totalBits = rawMessage.length();
     this.dataBits = extractDataBits();
     this.maxPosition = this.isExtended ? this.totalBits - 1 : this.totalBits;
@@ -99,7 +104,6 @@ public class HammingDecoder {
    * - "rg": bit de paridad global (si aplica)
    */
   public void bitSetupReceived() {
-    this.detailLines = new java.util.ArrayList<>();
     this.msgBitsReceived = new java.util.ArrayList<>();
     this.detailLines.add("Construcción del mensaje recibido:");
 
@@ -388,7 +392,7 @@ public class HammingDecoder {
         this.detailLines.add(" - Resultado final: RETRANSMITIR");
         this.detailLines.add("===== FIN DEL PROCESO DE CONSTRUCCIÓN =====");
 
-        result.setDecodedMessage("RETRANSMITIR");
+        result.setDecodedMessage(null);
         return result;
       }
 
