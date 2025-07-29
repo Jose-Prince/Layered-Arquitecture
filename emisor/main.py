@@ -26,8 +26,8 @@ def main():
     msg_hamming = make_noise(tasa_error, msg_hamming)
     print(f"Message with sound: {msg_hamming}")
     
-    #sendMsg(msg_hamming)
-    #print(f"\n\t¡Mensaje enviado!")
+    sendMsg(msg_hamming)
+    print(f"\n\t¡Mensaje enviado!")
 
 if __name__ == "__main__":
     main()

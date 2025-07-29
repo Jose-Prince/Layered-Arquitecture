@@ -5,3 +5,7 @@ bits_per_char: 8
 network:
   host: "127.0.0.1"
   port: 60000
+
+algorithms:
+  hamming: 0
+  fletcher: 1

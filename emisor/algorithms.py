@@ -20,6 +20,7 @@ class HammingAlgorithm:
         self.is_extended = config.get("extended", True)
         self.is_even_parity = config.get("parity", "even") == "even"
         self.global_redundancy_bits = 1 if self.is_extended else 0
+        self.bit_algorithm = config.get('algorithms', {}).get('hamming', 0)
         
         self.calculateParityBits()
         self.quantity_bits = self.data_bits + self.parity_bits + self.global_redundancy_bits
@@ -119,7 +120,7 @@ class HammingAlgorithm:
             self.msg_bits[-1] = (parity_extend, self.type_bit[2])
 
     def getMsgOutput(self):
-        return ''.join(str(bit) for bit, _ in self.msg_bits)
+        return str(self.bit_algorithm) + ''.join(str(bit) for bit, _ in self.msg_bits)
 
     def exportToTxt(self, filename):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -169,6 +170,11 @@ class HammingAlgorithm:
             f.write("\n===== FIN DEL DETALLE =====\n")
 
 def fletcher_checksum_emitter(msg, f_type):
+    with open("../protocol.yaml", 'r') as file:
+        config = yaml.safe_load(file)
+        
+    algorithm_type = config.get('algorithms', {}).get('fletcher', 1)
+
     block_size = f_type // 2
     mod = 2 ** block_size - 1
 
@@ -195,7 +201,7 @@ def fletcher_checksum_emitter(msg, f_type):
     # Convertir a binario
     bin_checksum = format(checksum, f'0{total_bits}b')
 
-    complete_msg = padded_msg + bin_checksum
+    complete_msg = str(algorithm_type) + padded_msg + bin_checksum
     print(f"Checksum: {complete_msg}")
     return complete_msg
 
