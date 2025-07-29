@@ -20,14 +20,23 @@ def main():
     binario = stringToBin(mensaje=mensaje, bits_per_char=protocol["bits_per_char"])
     print(f"Codificado ASCII: {binario}")
     
-    msg_hamming = applyAlgorithm(binario, algoritmo, config)
-    print(f"Mensaje codificado: {msg_hamming}")
+    try:
+        msg_hamming = applyAlgorithm(binario, algoritmo, config)
+        print(f"Mensaje codificado: {msg_hamming}")
+    except ValueError as e:
+        print(f"\n[ERROR] {e}")
+        return
     
     msg_hamming = make_noise(tasa_error, msg_hamming)
     print(f"Message with sound: {msg_hamming}")
     
-    sendMsg(msg_hamming)
-    print(f"\n\t¡Mensaje enviado!")
+    try:
+        sendMsg(msg_hamming)
+        print(f"\n\t¡Mensaje enviado!")
+    except ConnectionRefusedError:
+        print(f"\n[ERROR] No se pudo establecer conexión con el receptor (mensaje no enviado).")
+    except Exception as e:
+        print(f"\n[ERROR inesperado] {e}")
 
 if __name__ == "__main__":
     main()

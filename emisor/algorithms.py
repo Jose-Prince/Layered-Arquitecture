@@ -121,8 +121,13 @@ class HammingAlgorithm:
             self.msg_bits[-1] = (parity_extend, self.type_bit[2])
 
     def getMsgOutput(self):
+        max_data_bits = 2 ** self.bits_configuration - 1
+        if self.data_bits > max_data_bits:
+            raise ValueError(f"El mensaje es muy largo. Solo se permiten {max_data_bits} bits de datos con bits_configuration = {self.bits_configuration}")
+
         bits_dc = format(self.data_bits, f'0{self.bits_configuration}b')
         return str(self.bit_algorithm) + bits_dc + ''.join(str(bit) for bit, _ in self.msg_bits)
+
 
     def exportToTxt(self, filename):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
