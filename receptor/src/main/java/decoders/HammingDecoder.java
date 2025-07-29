@@ -129,6 +129,39 @@ public class HammingDecoder {
   }
 
   /**
+   * Calcula los bits que están cubiertos por cada bit de redundancia Hamming.
+   *
+   * Para cada posición de bit de redundancia (por ejemplo: 1, 2, 4, 8...),
+   * se determina qué posiciones de la trama de bits son verificadas por ese bit.
+   */
+  public void assignRedundancyCoverage() {
+    this.redundancyCoverageMap = new java.util.HashMap<>();
+    this.detailLines.add("Asignación de cobertura de bits de redundancia:");
+
+    // Offset: cantidad de bits antes del bloque codificado (alg + conf)
+    int offset = 1 + this.bitsConfiguration;
+
+    for (int r : this.posRedundancyBits) {
+      List<Integer> posiciones = new java.util.ArrayList<>();
+
+      for (int i = 1; i <= this.totalBits - offset; i++) {
+        int realPos = i + offset;
+        boolean isCovered = (i & r) != 0;
+        boolean notGlobalBit = !this.isExtended || realPos != this.totalBits;
+
+        if (isCovered && notGlobalBit) {
+          posiciones.add(realPos);
+        }
+      }
+
+      this.redundancyCoverageMap.put(r, posiciones);
+      this.detailLines.add(String.format(" - r%d (posición %d) cubre: %s", r, r + offset, posiciones));
+    }
+
+    this.detailLines.add("");
+  }
+
+  /**
    * Obtener el mensaje binario recibido
    */
   public String getMessage() {

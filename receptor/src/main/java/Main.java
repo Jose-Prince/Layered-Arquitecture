@@ -10,7 +10,7 @@ public class Main {
       ProtocolConfig config = ConfigLoader.load("../protocol.yaml");
 
       System.out.println("Configuración de protocolo:");
-      System.out.println("\tParity: " + config.getParity());
+      System.out.println("\tIs Parity Even: " + config.isParityEven());
       System.out.println("\tExtended: " + config.isExtended());
       System.out.println("\tBits per char: " + config.getBits_per_char());
 
@@ -31,6 +31,28 @@ public class Main {
           // Aquí puedes mandar el mensaje a otras funciones
           System.out.println("\tMensaje recibido: " + message);
           // por ejemplo: procesarMensaje(message);
+          int receivedAlgorithmBit = Character.getNumericValue(message.charAt(0));
+
+          if (receivedAlgorithmBit == config.getAlgorithms().getHamming()) {
+            boolean isExtended = config.isExtended();
+            boolean isEven = config.isParityEven();
+            int bitsConfig = config.getHamming().getBits_configuration();
+
+            decoders.HammingDecoder decoder = new decoders.HammingDecoder(
+                message,
+                bitsConfig,
+                isExtended,
+                isEven);
+
+            decoder.bitSetupReceived();
+            decoder.assignRedundancyCoverage();
+
+            // Mostrar el detalle
+            // for (String line : decoder.getDetailLines()) {
+            // System.out.println(line);
+            // }
+          }
+
         }
       });
 

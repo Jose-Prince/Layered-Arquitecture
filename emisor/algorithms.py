@@ -18,7 +18,7 @@ class HammingAlgorithm:
         # Leer configuración del archivo YAML
         config = self.loadConfig(config_path)
         self.is_extended = config.get("extended", True)
-        self.is_even_parity = config.get("parity", "even") == "even"
+        self.is_even_parity = config.get("parityEven", True)
         self.global_redundancy_bits = 1 if self.is_extended else 0
         self.bit_algorithm = config.get('algorithms', {}).get('hamming', 0)
         self.bits_configuration = config.get('hamming', {}).get('bits_configuration', 5)

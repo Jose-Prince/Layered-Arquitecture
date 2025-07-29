@@ -2,7 +2,7 @@ package config;
 
 public class ProtocolConfig {
 
-  private String parity;
+  private boolean parityEven;
   private boolean extended;
   private int bits_per_char;
   private Network network;
@@ -10,12 +10,12 @@ public class ProtocolConfig {
   private Hamming hamming;
 
   // Getters y Setters
-  public String getParity() {
-    return parity;
+  public boolean isParityEven() {
+    return parityEven;
   }
 
-  public void setParity(String parity) {
-    this.parity = parity;
+  public void setParityEven(boolean parityEven) {
+    this.parityEven = parityEven;
   }
 
   public boolean isExtended() {

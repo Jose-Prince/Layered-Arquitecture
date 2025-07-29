@@ -1,4 +1,4 @@
-parity: even
+parityEven: true
 extended: true
 bits_per_char: 8
 
