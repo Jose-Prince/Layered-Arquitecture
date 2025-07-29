@@ -9,3 +9,6 @@ network:
 algorithms:
   hamming: 0
   fletcher: 1
+
+hamming:
+  bits_configuration: 5

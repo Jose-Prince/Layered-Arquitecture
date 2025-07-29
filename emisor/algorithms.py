@@ -21,6 +21,7 @@ class HammingAlgorithm:
         self.is_even_parity = config.get("parity", "even") == "even"
         self.global_redundancy_bits = 1 if self.is_extended else 0
         self.bit_algorithm = config.get('algorithms', {}).get('hamming', 0)
+        self.bits_configuration = config.get('hamming', {}).get('bits_configuration', 5)
         
         self.calculateParityBits()
         self.quantity_bits = self.data_bits + self.parity_bits + self.global_redundancy_bits
@@ -120,7 +121,8 @@ class HammingAlgorithm:
             self.msg_bits[-1] = (parity_extend, self.type_bit[2])
 
     def getMsgOutput(self):
-        return str(self.bit_algorithm) + ''.join(str(bit) for bit, _ in self.msg_bits)
+        bits_dc = format(self.data_bits, f'0{self.bits_configuration}b')
+        return str(self.bit_algorithm) + bits_dc + ''.join(str(bit) for bit, _ in self.msg_bits)
 
     def exportToTxt(self, filename):
         os.makedirs(os.path.dirname(filename), exist_ok=True)
