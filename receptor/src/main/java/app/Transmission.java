@@ -13,11 +13,18 @@ public class Transmission {
   private volatile boolean running = true;
   private final MessageListener listener;
 
+  // Constructor
   public Transmission(ProtocolConfig config, MessageListener listener) {
     this.config = config;
     this.listener = listener;
   }
 
+  /**
+   * Inicia el servidor para escuchar conexiones entrantes.
+   * Al recibir un mensaje, lo envía al listener definido.
+   * Incluye un hook para cerrar el socket de forma segura al finalizar la
+   * ejecución.
+   */
   public void start() {
     int port = config.getNetwork().getPort();
 
