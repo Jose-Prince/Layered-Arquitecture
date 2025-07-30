@@ -1,7 +1,7 @@
 import os
 import yaml
 class HammingAlgorithm:
-    def __init__(self, msg, config_path="./protocol.yaml", generate_report=True, output_path="./reports/t_hamming_report.txt", detail_path="./reports/t_hamming_detail.txt"):
+    def __init__(self, msg, config_path="./protocol.yaml", generate_report=True, output_path="./reports/t_hamming_report.txt", detail_path="./reports/t_hamming_detail.txt", report=None):
         self.msg = msg
         self.msg_bits = []
         self.data_bits = len(msg)
@@ -31,6 +31,8 @@ class HammingAlgorithm:
         self.createMsg()
         self.setAllParityBits()
         self.msg_output = self.getMsgOutput()
+        if report:
+            report.setDataBitsCount(count=self.data_bits)
         
         if generate_report:
             self.exportToTxt(filename=self.output_path)
