@@ -1,4 +1,11 @@
-# Layered Arquitecture 🏗️
+# Laboratorio 2 Parte 2: Esquemas de detección y corrección de errores🏗️
+
+José Prince #22087
+Josue Say #22801
+
+## Descripción de la práctica
+
+En esta práctica de laboratorio se debe de desarrollar una arquitectura de capas, con las siguientes capas: Aplicación, Presentación, Enlace, Ruido (unicamente aplicable al emisor) y Transmisión. La implementación del emisor y receptor se realiza con diferentes lenguajes de programación. El envío de información del emisor al receptor se hace mediante sockets. Por cada servicio (emisor y receptor) se aplican algoritmos de detección y corrección de errores, estos permitiran codificar y decoficar el mensaje que se enviá.
 
 ## 🌐 Entorno
 
@@ -43,3 +50,11 @@ mvn exec:java
 Avances de la primera entrega creación de capa de aplicación, presentación, algoritmo y ruido.
 
 ![Screenshot](./images/screenshot.png)
+
+## Resultados
+
+## Discusión
+
+## Conclusiones
+
+## Citas y Referencias
