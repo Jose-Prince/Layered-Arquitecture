@@ -28,7 +28,32 @@ public class Application {
         System.out.println("\tMensaje: RETRANSMITIR");
       }
     } else {
-      System.out.println("\tMensaje válido: " + result.getDecodedMessage());
+      System.out.println("\tMensaje válido: " + binToAscii(result.getDecodedMessage(), config.getBits_per_char()));
     }
   }
+
+  /**
+   * Convierte una cadena binaria en su representación ASCII.
+   *
+   * Esta función toma una cadena compuesta por bits (por ejemplo,
+   * "0100100001100101")
+   * y la divide en bloques del tamaño especificado por `bitsPerChar` para
+   * convertir
+   * cada bloque en un carácter ASCII correspondiente.
+   *
+   * @param binary      Cadena binaria a convertir.
+   * @param bitsPerChar Número de bits que representa cada carácter (usualmente
+   *                    8).
+   * @return Cadena de texto resultante en formato ASCII.
+   */
+  public static String binToAscii(String binary, int bitsPerChar) {
+    StringBuilder mensaje = new StringBuilder();
+    for (int i = 0; i < binary.length(); i += bitsPerChar) {
+      String byteStr = binary.substring(i, i + bitsPerChar);
+      int charCode = Integer.parseInt(byteStr, 2);
+      mensaje.append((char) charCode);
+    }
+    return mensaje.toString();
+  }
+
 }
