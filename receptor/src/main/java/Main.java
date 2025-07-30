@@ -4,6 +4,7 @@ import app.Transmission;
 import config.ConfigLoader;
 import config.ProtocolConfig;
 import core.ValidationResult;
+import core.Report;
 
 public class Main {
   public static void main(String[] args) {
@@ -27,9 +28,12 @@ public class Main {
       System.out.println("\tBits configuration(data): " + config.getHamming().getBits_configuration());
 
       Transmission transmission = new Transmission(config, message -> {
+        Report report = new Report();
+
         System.out.println("\nMensaje recibido: " + message);
-        ValidationResult result = Presentation.decodeMessage(message, config);
-        Application.process(result, config);
+        ValidationResult result = Presentation.decodeMessage(message, config, report);
+        Application.process(result, config, report);
+        report.exportToCsv("test_receptor.csv");
       });
 
       transmission.start();

@@ -13,6 +13,7 @@ class Report:
         Los atributos pueden ser configurados posteriormente usando los métodos `set_*`.
         """
         self.originalMessage = ""
+        self.bitMessage = ""
         self.encodedMessage = ""
         self.transmittedMessage = ""
         self.selectedAlgorithm = ""
@@ -20,6 +21,10 @@ class Report:
         self.errorRate = 0.0
         self.dataBitsCount = 0
         self.errorCount = 0
+
+    def setBitMessage(self, message: str):
+        """Asigna el mensaje original no codificado."""
+        self.bitMessage = message
 
     def setOriginalMessage(self, message: str):
         """Asigna el mensaje original no codificado."""
@@ -78,6 +83,7 @@ class Report:
         # Datos a exportar
         data = {
             "originalMessage": self.originalMessage,
+            "bitMessage": self.bitMessage,
             "encodedMessage": self.encodedMessage,
             "transmittedMessage": self.transmittedMessage,
             "selectedAlgorithm": self.selectedAlgorithm,

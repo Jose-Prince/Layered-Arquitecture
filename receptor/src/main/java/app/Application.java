@@ -2,6 +2,7 @@ package app;
 
 import config.ProtocolConfig;
 import core.ValidationResult;
+import core.Report;
 
 public class Application {
 
@@ -19,16 +20,20 @@ public class Application {
    * @param config Configuración del protocolo (actualmente no utilizada, pero
    *               disponible para futuras extensiones)
    */
-  public static void process(ValidationResult result, ProtocolConfig config) {
+  public static void process(ValidationResult result, ProtocolConfig config, Report report) {
+    String msg_temp = result.getDecodedMessage();
+
     if (result.isError()) {
       if (result.isOneError()) {
-        System.out.println("\tMensaje corregido: " + result.getDecodedMessage());
+        System.out.println("\tMensaje corregido: " + msg_temp);
+        report.setDecodedTextMessage(msg_temp);
       } else {
         System.out.println("\tError no corregible. Se requiere retransmisión.");
         System.out.println("\tMensaje: RETRANSMITIR");
       }
     } else {
-      System.out.println("\tMensaje válido: " + binToAscii(result.getDecodedMessage(), config.getBits_per_char()));
+      System.out.println("\tMensaje válido: " + binToAscii(msg_temp, config.getBits_per_char()));
+      report.setDecodedTextMessage(binToAscii(msg_temp, config.getBits_per_char()));
     }
   }
 

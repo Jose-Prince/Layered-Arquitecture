@@ -35,6 +35,7 @@ def main():
     print(f"Message with sound: {msg_noise}")
     
     # Llenar datos del reporte
+    report.setBitMessage(message=binario)
     report.setOriginalMessage(message=mensaje)
     report.setErrorRate(errorRate=tasa_error)
     if tasa_error > 0:
@@ -45,7 +46,7 @@ def main():
     report.setSelectedAlgorithm(algorithm=algoritmo)
     report.setTransmittedMessage(message=msg_noise)
     report.updateErrorCount()
-    report.exportToCsv(filename="test.csv")
+    report.exportToCsv(filename="test_emisor.csv")
     
     try:
         sendMsg(msg_noise)

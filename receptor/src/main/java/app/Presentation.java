@@ -3,6 +3,7 @@ package app;
 import config.ProtocolConfig;
 import core.ValidationResult;
 import decoders.HammingDecoder;
+import core.Report;
 
 public class Presentation {
 
@@ -16,11 +17,14 @@ public class Presentation {
    * @return Objeto ValidationResult con la información de validación y
    *         decodificación
    */
-  public static ValidationResult decodeMessage(String message, ProtocolConfig config) {
+  public static ValidationResult decodeMessage(String message, ProtocolConfig config, Report report) {
+
+    report.setReceivedMessage(message);
     int algorithmBit = Character.getNumericValue(message.charAt(0));
 
     if (algorithmBit == config.getAlgorithms().getHamming()) {
-      return decodeHammingMessage(message, config, false);
+      report.setDetectedAlgorithm("hamming");
+      return decodeHammingMessage(message, config, false, report);
     }
 
     // Agregar otro algoritmo
@@ -41,7 +45,8 @@ public class Presentation {
    * @param showLog Indica si se debe mostrar el log detallado del proceso
    * @return Objeto ValidationResult con el resultado de la decodificación
    */
-  private static ValidationResult decodeHammingMessage(String message, ProtocolConfig config, boolean showLog) {
+  private static ValidationResult decodeHammingMessage(String message, ProtocolConfig config, boolean showLog,
+      Report report) {
     HammingDecoder decoder = new HammingDecoder(
         message,
         config.getHamming().getBits_configuration(),
@@ -54,6 +59,18 @@ public class Presentation {
       }
     }
 
-    return decoder.getValidationResult();
+    ValidationResult result = decoder.getValidationResult();
+
+    report.setDataBitsCount(decoder.getDataBits());
+    report.setDecodedBitMessage(result.getDecodedMessage());
+    report.setErrorDetected(result.isError());
+    report.isOneError(result.isOneError());
+    if (result.getDecodedMessage() != null) {
+      report.setErrorResolved(true);
+    } else {
+      report.setErrorResolved(false);
+    }
+
+    return result;
   }
 }
