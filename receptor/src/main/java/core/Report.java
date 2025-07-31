@@ -3,13 +3,14 @@ package core;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigInteger;
 
 public class Report {
 
   private boolean errorDetected;
   private boolean isOneError;
   private boolean errorResolved;
-  private int dataBitsCount;
+  private BigInteger dataBitsCount;
   private String receivedMessage;
   private String detectedAlgorithm;
   private String decodedBitMessage;
@@ -19,7 +20,7 @@ public class Report {
     this.errorDetected = false;
     this.isOneError = false;
     this.errorResolved = false;
-    this.dataBitsCount = 0;
+    this.dataBitsCount = BigInteger.ZERO;
     this.receivedMessage = "";
     this.detectedAlgorithm = "";
     this.decodedBitMessage = "";
@@ -39,7 +40,7 @@ public class Report {
     return errorResolved;
   }
 
-  public int getDataBitsCount() {
+  public BigInteger getDataBitsCount() {
     return dataBitsCount;
   }
 
@@ -72,7 +73,7 @@ public class Report {
     this.errorResolved = errorResolved;
   }
 
-  public void setDataBitsCount(int dataBitsCount) {
+  public void setDataBitsCount(BigInteger dataBitsCount) {
     this.dataBitsCount = dataBitsCount;
   }
 

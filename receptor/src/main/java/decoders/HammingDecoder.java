@@ -1,5 +1,6 @@
 package decoders;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ public class HammingDecoder {
   private boolean isExtended;
   private boolean isEvenParity;
   private String rawMessage;
-  private int dataBits;
+  private BigInteger dataBits;
   private int totalBits;
 
   // Datos auxiliares
@@ -63,9 +64,9 @@ public class HammingDecoder {
    * Obtener la cantidad de data bits dado el valor apartado para representar los
    * bits de data
    */
-  private int extractDataBits() {
+  private BigInteger extractDataBits() {
     String bits = message.substring(1, 1 + this.bitsConfiguration);
-    return Integer.parseInt(bits, 2);
+    return new BigInteger(bits, 2);
   }
 
   /*
@@ -73,7 +74,7 @@ public class HammingDecoder {
    */
   private int calculateRedundancyBits() {
     int r = 0;
-    while (Math.pow(2, r) < (this.dataBits + r + 1)) {
+    while (BigInteger.valueOf(2).pow(r).compareTo(this.dataBits.add(BigInteger.valueOf(r + 1))) < 0) {
       r++;
     }
     return r;
@@ -454,11 +455,11 @@ public class HammingDecoder {
   /**
    * Obtener la cantidad de bits que son correspondiente a `data`
    */
-  public int getDataBits() {
+  public BigInteger getDataBits() {
     return this.dataBits;
   }
 
-  public void setDataBits(int dataBits) {
+  public void setDataBits(BigInteger dataBits) {
     this.dataBits = dataBits;
   }
 
