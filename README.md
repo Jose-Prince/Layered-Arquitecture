@@ -62,6 +62,15 @@ A continuación se muestran las diferentes pruebas que se realizaron. Para la re
 
 ## Discusión
 
+![Screenshot](./images/graficas/gp1.png)
+![Screenshot](./images/graficas/gp2.png)
+![Screenshot](./images/graficas/gp3.png)
+![Screenshot](./images/graficas/gp4.png)
+![Screenshot](./images/graficas/gp5.png)
+![Screenshot](./images/graficas/gp6.png)
+![Screenshot](./images/graficas/gp7.png)
+![Screenshot](./images/graficas/gp8.png)
+
 ## Conclusiones
 
 ## Citas y Referencias
