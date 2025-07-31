@@ -1,7 +1,9 @@
 # Laboratorio 2 Parte 2: Esquemas de detección y corrección de errores🏗️
 
-José Prince #22087
-Josue Say #22801
+## Integrantes
+
+- José Prince #22087
+- Josue Say #22801
 
 ## Descripción de la práctica
 
@@ -44,6 +46,8 @@ mvn exec:java
 - Los bits apartados para representar la cantidad de bits de data son 5 y estan definidos en `protocol.yaml`.
 - Los bits codificados con Hamming es el proceso hecho por el algoritmo (este recibe una cadena de bits que se pasa a binario de 8 bits actualmente el cual se define en `protocol.yaml`).
 - El bit de paridad global utilizado para detectar más de 1 error, este bits se coloca siempre y cuando la propiedadad `extended` esta como `true` en `protocol.yaml`.
+
+## Generación de reporte
 
 ## 🔄 Avances
 
