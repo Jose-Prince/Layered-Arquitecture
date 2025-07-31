@@ -65,14 +65,37 @@ A continuación se muestran las diferentes pruebas que se realizaron. Para la re
 
 ## Discusión
 
+
+En base a las pruebas realizadas se obtuvieron diversos resultados los cuales se pueden ver reflejados en las siguentes grpaficas.
+
 ![Screenshot](./images/graficas/gp1.png)
+
+En este caso se presenta que la tasa promedio de error por algoritmo fue mayor en el caso de hamming y esto se puede deber a las pruebas que se realziaron debido a que el algoritmo de fletcher es más propenso a cometer errores, pero esto no implica que Hamming tampoco pueda cometer errores, incluso Hamming trata de corregir cuando existe más de un error haciendo una interpretación incorrecta del mensaje.
+
 ![Screenshot](./images/graficas/gp2.png)
+
+Acá observamos que la capacidad de hamming para corregir errores permite que los mensajes puedan llegar a ser interpretados por el receptor, mientras que con Fletcher se ve que el minimo ruido hace que el mensaje no se pueda interpretar.
+
 ![Screenshot](./images/graficas/gp3.png)
+
+La añadición de másbits por parte de hamming indica que mientras más largo sea el mensaje más serán los bits que se añadan mientras que en fletcher la cantidad de bits añadidos es fija debido a como es que se calculan las sumas y las configuraciones que puede tener este algoritmo.
+
 ![Screenshot](./images/graficas/gp4.png)
-![Screenshot](./images/graficas/gp5.png)
 ![Screenshot](./images/graficas/gp6.png)
+
+El algoritmo de Fletcher presenta un tasa de detección de error mayor al de Fletcher y esto se debe a la facilidad con la que se puede alterar ya sea el mensaje original o una de las sumas realizadas por el algoritmo haciendo que se detecte que hubo un cambio en el mensaje.
+
+![Screenshot](./images/graficas/gp5.png)
+
+Con esta información vemos que con una baja tasa de error Hamming es capaz de corregir los errores que se presentan en un mensaje haciendolo bastante eficiente en el envio de estos.
+
 ![Screenshot](./images/graficas/gp7.png)
+
+LOs algoritmos no coincidieron porque el ruido afectaba a todo el mensaje y en este uno de los bits representaba que algoritmo era el que se aplicaba y si el ruido afectaba a este bit hacia que el emisor usara un algoritmo mientras que el receptor usaba otro.
+
 ![Screenshot](./images/graficas/gp8.png)
+
+La gráfica muestra la diferencia de bits útiles entre el receptor y el emisor para dos algoritmos: Fletcher y Hamming. El algoritmo Fletcher presenta una variabilidad mucho mayor en la diferencia de bits, con un rango intercuartil. En contraste, el algoritmo Hamming muestra una diferencia de bits mucho más consistente y cercana a cero.
 
 ## Conclusiones
 
