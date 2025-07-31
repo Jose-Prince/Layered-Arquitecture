@@ -11,4 +11,4 @@ algorithms:
   fletcher: 1
 
 hamming:
-  bits_configuration: 5
+  bits_configuration: 32

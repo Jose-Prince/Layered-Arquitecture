@@ -25,8 +25,8 @@ public class Application {
 
     if (result.isError()) {
       if (result.isOneError()) {
-        System.out.println("\tMensaje corregido: " + msg_temp);
-        report.setDecodedTextMessage(msg_temp);
+        System.out.println("\tMensaje corregido: " + binToAscii(msg_temp, config.getBits_per_char()));
+        report.setDecodedTextMessage(binToAscii(msg_temp, config.getBits_per_char()));
       } else {
         System.out.println("\tError no corregible. Se requiere retransmisión.");
         System.out.println("\tMensaje: RETRANSMITIR");
