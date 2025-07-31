@@ -57,6 +57,14 @@ Avances de la primera entrega creación de capa de aplicación, presentación, a
 
 ## Resultados
 
+A continuación se muestran las diferenets pruebas que se realizaron. Para la realización de las pruebas la tasa de error nunca fue igual a 1, esto para evitar tribialidades ya que se sabe que con una tasa de error del 0% el mensaje siempre se envia correctamente.
+
+![Test1](./images/TEST1.png)
+![Test2](./images/TEST2.png)
+![Test3](./images/TEST3.png)
+![Test4](./images/TEST4.png)
+![Test5](./images/TEST5.png)
+
 ## Discusión
 
 ## Conclusiones
