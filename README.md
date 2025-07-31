@@ -84,4 +84,4 @@ A continuación se muestran las diferentes pruebas que se realizaron. Para la re
 
 - Este ejercicio nos permitió comprender que el éxito de un sistema de transmisión confiable no depende únicamente del algoritmo de detección o corrección utilizado, sino de una combinación de diseño cuidadoso, codificación de control resistente al ruido, y conciencia sobre los límites de lo que el receptor puede asumir sin garantías confiables sobre la metadata.
 
-## Citas y Referencias
+- Al analizar los resultados, vimos que Hamming detectó errores de forma más confiable que Fletcher, especialmente con tasas de error entre 0.1 y 0.5 y mensajes de tamaño medio. Aunque Fletcher también detectó errores, fue más propenso a fallar cuando el ruido dañó la información que indica cuántos bits eran datos o qué algoritmo se usó, haciendo que el receptor se confundiera. Hamming, con su estructura más robusta, resistió mejor este tipo de fallos y logró mantener una detección más estable en condiciones de ruido moderado.
