@@ -2,6 +2,7 @@ package app;
 
 import config.ProtocolConfig;
 import core.ValidationResult;
+import decoders.FletcherDecoder;
 import decoders.HammingDecoder;
 import core.Report;
 
@@ -28,6 +29,11 @@ public class Presentation {
     }
 
     // Agregar otro algoritmo
+    if (algorithmBit == config.getAlgorithms().getFletcher()) {
+      report.setDetectedAlgorithm("fletcher");
+      FletcherDecoder decoder = new FletcherDecoder(message, 16);
+      return decoder.DecodeMessage();
+    }
 
     return new ValidationResult(true, -1, false, "RETRANSMITIR");
   }

@@ -1,5 +1,7 @@
 package decoders;
 
+import core.ValidationResult;
+
 public class FletcherDecoder {
     String message;
     int f_type;
@@ -10,7 +12,7 @@ public class FletcherDecoder {
     int sum1Recv;
     int sum2Recv;
 
-    FletcherDecoder(String message, int f_type) {
+    public FletcherDecoder(String message, int f_type) {
         this.message = message;
         this.f_type = f_type;
         this.block_size = f_type / 2;
@@ -21,7 +23,7 @@ public class FletcherDecoder {
         this.sum2Recv = 0;
     }
 
-    public String DecodeMessage() {
+    public ValidationResult DecodeMessage() {
         String dataBits = message.substring(0, message.length() - f_type);
         String checksumBits = message.substring(message.length() - f_type);
 
@@ -42,10 +44,17 @@ public class FletcherDecoder {
             sum2 = (sum2 + sum1) % mod;
         }
 
-        return dataBits;
+        return new ValidationResult(
+            validateMessage(), 
+            0,
+            false, 
+            dataBits
+        );
     }
 
     public Boolean validateMessage() {
         return (sum1 == sum1Recv) && (sum2 == sum2Recv);
     }
+
+
 }
