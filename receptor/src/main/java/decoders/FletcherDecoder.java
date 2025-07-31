@@ -53,7 +53,7 @@ public class FletcherDecoder {
     }
 
     public Boolean validateMessage() {
-        return (sum1 == sum1Recv) && (sum2 == sum2Recv);
+        return (sum1 != sum1Recv) || (sum2 != sum2Recv);
     }
 
 

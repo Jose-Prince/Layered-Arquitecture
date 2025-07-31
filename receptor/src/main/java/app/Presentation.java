@@ -31,7 +31,7 @@ public class Presentation {
     // Agregar otro algoritmo
     if (algorithmBit == config.getAlgorithms().getFletcher()) {
       report.setDetectedAlgorithm("fletcher");
-      FletcherDecoder decoder = new FletcherDecoder(message, 16);
+      FletcherDecoder decoder = new FletcherDecoder(message.substring(0, message.length() - 1), 16);
       return decoder.DecodeMessage();
     }
 
