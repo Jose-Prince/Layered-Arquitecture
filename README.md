@@ -61,7 +61,7 @@ Avances de la primera entrega creación de capa de aplicación, presentación, a
 
 ## Resultados
 
-A continuación se muestran las diferentes pruebas que se realizaron. Para la realización de las pruebas la tasa de error nunca fue igual a 1, esto para evitar tribialidades ya que se sabe que con una tasa de error del 0% el mensaje siempre se envia correctamente.
+Los resultados se encuentran en el directorio de ´data´, ahi se encuentran 3 csv que es de donde se obtuvo la información para hacer la gráficas de la discusión.
 
 ## Discusión
 
